@@ -12,7 +12,8 @@ ALL_FILES = []
 
 def create_parser ():
     parser = argparse.ArgumentParser()
-    parser.add_argument ('-s', '--secconds', nargs='?', type=int, default=14400)
+    parser.add_argument('-s', '--secconds', nargs='?', type=int, default=14400)
+    parser.add_argument('-f', '--file', nargs='?', type=str, default='')
  
     return parser
 
@@ -27,14 +28,19 @@ def process_files(directory):
             process_files(subdir_path)
 
 
-async def upload_photo_to_telegram(telegram_api_key, time_for_upload):
+async def upload_photo_to_telegram(telegram_api_key, time_for_upload, file):
      while True:
         process_files('./pictures')
         random.shuffle(ALL_FILES)
         bot = telegram.Bot(telegram_api_key)
-        async with bot:
-            await bot.send_document(chat_id='@picha_nasa', document=open(ALL_FILES[0], 'rb'))
-            time.sleep(time_for_upload)
+        if file:
+            async with bot:
+                await bot.send_document(chat_id='@picha_nasa', document=open(file, 'rb'))
+                break
+        else:
+            async with bot:
+                await bot.send_document(chat_id='@picha_nasa', document=open(ALL_FILES[0], 'rb'))
+                time.sleep(time_for_upload)
 
 
 async def main():
@@ -43,7 +49,8 @@ async def main():
     telegram_api_key = env.str('TELEGRAM_API_KEY')
     args = create_parser().parse_args()
     time_for_upload = args.secconds
-    await upload_photo_to_telegram(telegram_api_key, time_for_upload)
+    file_for_upload = args.file
+    await upload_photo_to_telegram(telegram_api_key, time_for_upload, file_for_upload)
 
 if __name__ == "__main__":
     asyncio.run(main())
