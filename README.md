@@ -6,14 +6,14 @@
 
 Перед запуском скрипта необходимо установить все необходимые зависимости. Для этого выполните следующую команду:
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 
 ## Настройка окружения
 
 Для работы скрипта необходимо установить переменные окружения. Создайте файл `.env` в корневой директории проекта и добавьте в него следующие переменные:
 
-TELEGRAM_API_KEY=your_telegram_api_key
+`TELEGRAM_API_KEY=your_telegram_api_key`
 
 Замените `your_telegram_api_key` на ваш ключ API Telegram.
 
@@ -21,13 +21,13 @@ TELEGRAM_API_KEY=your_telegram_api_key
 
 Запустите скрипт следующей командой:
 
-python pictures_uploads.py
+`python pictures_uploads.py`
 
 По умолчанию скрипт будет загружать фотографии каждые 4 часа. Чтобы изменить это время, можно указать дополнительный аргумент `-s` или `--seconds` с указанием времени в секундах:
 
 Так же можно передать путь и название файла что бы загрузить его `-f` или `--file`
 
-python pictures_uploads.py -s 14400 -f 'pictures/space-x_0.jpg'
+`python pictures_uploads.py -s 14400 -f 'pictures/space-x_0.jpg'`
 
 
 ## Важно

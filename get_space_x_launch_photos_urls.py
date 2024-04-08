@@ -14,7 +14,7 @@ def create_parser ():
     return parser
 
 
-def get_spacex_photos(url, id):
+def get_spacex_photos(url, launch_id):
     """
     Получает оригинальные URL-адреса фотографий SpaceX по идентификатору запуска.
 
@@ -37,7 +37,7 @@ def get_spacex_photos(url, id):
         >>> launch_id = '5eb87d47ffd86e000604b38a'
         >>> photos_url = get_spacex_photos(spacex_url, launch_id)
     """
-    response = requests.get(f'{url}/{id}')
+    response = requests.get(f'{url}/{launch_id}')
     response.raise_for_status()
 
     return response.json()['links']['flickr']['original']

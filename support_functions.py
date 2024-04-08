@@ -61,5 +61,6 @@ def picture_download(pictures_urls_list, path, filename):
         response = requests.get(url_picture)
         response.raise_for_status()
 
-        with open(f'{path}/{filename}_{index}.{get_file_extension(url_picture)}', 'wb') as file:
+        file_path = Path(path, f"{filename}_{index}.{get_file_extension(url_picture)}")
+        with open(file_path, 'wb') as file:
             file.write(response.content)

@@ -5,6 +5,8 @@ import random
 import time
 import argparse
 from environs import Env
+from pathlib import Path
+
 
 
 ALL_FILES = []
@@ -12,7 +14,7 @@ ALL_FILES = []
 
 def create_parser ():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', '--secconds', nargs='?', type=int, default=14400)
+    parser.add_argument('-s', '--seconds', nargs='?', type=int, default=14400)
     parser.add_argument('-f', '--file', nargs='?', type=str, default='')
  
     return parser
@@ -28,29 +30,32 @@ def process_files(directory):
             process_files(subdir_path)
 
 
-async def upload_photo_to_telegram(telegram_api_key, time_for_upload, file):
+async def upload_photo_to_telegram(telegram_api_key, time_for_upload, chat_id, file):
      while True:
-        process_files('./pictures')
+        process_files(Path('./pictures'))
         random.shuffle(ALL_FILES)
         bot = telegram.Bot(telegram_api_key)
         if file:
-            async with bot:
-                await bot.send_document(chat_id='@picha_nasa', document=open(file, 'rb'))
-                break
+            with open(file, 'rb') as file:
+                async with bot:
+                    await bot.send_document(chat_id=chat_id, document=file)
+                    break
         else:
-            async with bot:
-                await bot.send_document(chat_id='@picha_nasa', document=open(ALL_FILES[0], 'rb'))
-                time.sleep(time_for_upload)
+            with open(ALL_FILES[0], 'rb') as document:
+                async with bot:
+                    await bot.send_document(chat_id=chat_id, document=document)
+                    time.sleep(time_for_upload)
 
 
 async def main():
     env = Env()
     env.read_env()
     telegram_api_key = env.str('TELEGRAM_API_KEY')
+    chat_id = env.str('CHAT_ID')
     args = create_parser().parse_args()
-    time_for_upload = args.secconds
+    time_for_upload = args.seconds
     file_for_upload = args.file
-    await upload_photo_to_telegram(telegram_api_key, time_for_upload, file_for_upload)
+    await upload_photo_to_telegram(telegram_api_key, time_for_upload, chat_id, file_for_upload)
 
 if __name__ == "__main__":
     asyncio.run(main())

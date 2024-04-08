@@ -1,6 +1,8 @@
 import requests
 from environs import Env
 from support_functions import picture_download
+import urllib.parse
+from datetime import datetime
 
 
 NASA_EPIC_IMAGES_INFO = 'https://api.nasa.gov/EPIC/api/natural/images'
@@ -44,9 +46,12 @@ def get_nasa_epic_download_url(base_url, info_url, api_key, extention):
     for picture_info in pictures_info_list:
         image_name = picture_info['image']
         (date, time) = picture_info['date'].split(' ')
-        date = date.replace('-', '/')
+        # datetime_from_string = datetime.fromisoformat(date)
+        datetime_from_string = datetime.strptime(date, "%Y-%m-%d")
+        date = datetime_from_string.strftime("%Y/%m/%d")
 
-        link = f'{base_url}/{date}/{extention}/{image_name}.{extention}?api_key={api_key}'
+        api_key = urllib.parse.urlencode(payload)
+        link = f'{base_url}/{date}/{extention}/{image_name}.{extention}?{api_key}'
         urls_list.append(link)
     return urls_list
 
