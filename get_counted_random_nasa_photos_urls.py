@@ -1,9 +1,19 @@
 import requests
 from environs import Env
 from support_functions import picture_download
+from pprint import pprint
+from pathlib import Path
+import argparse
 
 
 NASA_URL_APOD = 'https://api.nasa.gov/planetary/apod'
+
+
+def create_parser ():
+    parser = argparse.ArgumentParser()
+    parser.add_argument ('-f', '--download_path', nargs='?', default='pictures')
+ 
+    return parser
 
 
 def get_nasa_download_url(apod_url, api_key, photos_count):
@@ -36,10 +46,7 @@ def get_nasa_download_url(apod_url, api_key, photos_count):
     response = requests.get(apod_url, params=key_count_params)
     response.raise_for_status()
     response_elements = response.json()
-    urls_list = []
-    for element in response_elements:
-        url = element['url']
-        urls_list.append(url)
+    urls_list = [element['url'] for element in response_elements]
     return urls_list
 
 
@@ -47,9 +54,15 @@ def main():
     env = Env()
     env.read_env()
     nasa_api_key = env.str('NASA_API_KEY')
+    args = create_parser().parse_args()
+    download_path = args.download_path
+    print(Path(download_path))
+    if not Path(download_path).exists():
+        Path(download_path).mkdir(parents=True, exist_ok=True)
+
     picture_download(
         get_nasa_download_url(NASA_URL_APOD, nasa_api_key, 10),
-        'pictures', 'nasa_apod'
+        download_path, 'nasa_apod'
     )
 
 

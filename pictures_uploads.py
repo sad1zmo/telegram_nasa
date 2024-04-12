@@ -6,6 +6,7 @@ import time
 import argparse
 from environs import Env
 from pathlib import Path
+from telegram import NetworkError
 
 
 
@@ -51,12 +52,17 @@ async def main():
     env = Env()
     env.read_env()
     telegram_api_key = env.str('TELEGRAM_API_KEY')
-    chat_id = env.str('CHAT_ID')
+    chat_id = env.str('TELEGRAM_CHAT_ID')
     args = create_parser().parse_args()
     time_for_upload = args.seconds
     file_for_upload = args.file
-    await upload_photo_to_telegram(telegram_api_key, time_for_upload, chat_id, file_for_upload)
+    try:
+        await upload_photo_to_telegram(telegram_api_key, time_for_upload, chat_id, file_for_upload)
+    except NetworkError:
+        print("Проблемы с сетью. Повторная попытка через 60 секунд")
+        time.sleep(60)
 
+        
 if __name__ == "__main__":
     asyncio.run(main())
 

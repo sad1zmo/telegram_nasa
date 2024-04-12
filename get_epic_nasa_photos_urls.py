@@ -3,10 +3,19 @@ from environs import Env
 from support_functions import picture_download
 import urllib.parse
 from datetime import datetime
+from pathlib import Path
+import argparse
 
 
 NASA_EPIC_IMAGES_INFO = 'https://api.nasa.gov/EPIC/api/natural/images'
 NASA_EPIC_DOWNLOAD_BASE_URL = 'https://api.nasa.gov/EPIC/archive/natural'
+
+
+def create_parser ():
+    parser = argparse.ArgumentParser()
+    parser.add_argument ('-f', '--download_path', nargs='?', default='pictures')
+ 
+    return parser
 
 
 def get_nasa_epic_download_url(base_url, info_url, api_key, extention):
@@ -42,31 +51,35 @@ def get_nasa_epic_download_url(base_url, info_url, api_key, extention):
     response = requests.get(info_url, params=payload)
     response.raise_for_status()
     pictures_info_list = response.json()
-    urls_list = []
+    epic_download_url_list = []
     for picture_info in pictures_info_list:
         image_name = picture_info['image']
         (date, time) = picture_info['date'].split(' ')
-        # datetime_from_string = datetime.fromisoformat(date)
         datetime_from_string = datetime.strptime(date, "%Y-%m-%d")
         date = datetime_from_string.strftime("%Y/%m/%d")
 
         api_key = urllib.parse.urlencode(payload)
-        link = f'{base_url}/{date}/{extention}/{image_name}.{extention}?{api_key}'
-        urls_list.append(link)
-    return urls_list
+        link = f'{base_url}/{date}/{extention}/{image_name}.{extention}'
+        epic_download_url_list.append(link)
+    return epic_download_url_list
 
 
 def main():
     env = Env()
     env.read_env()
     nasa_api_key = env.str('NASA_API_KEY')
+    args = create_parser().parse_args()
+    download_path = args.download_path
+    print(Path(download_path))
+    if not Path(download_path).exists():
+        Path(download_path).mkdir(parents=True, exist_ok=True)
     
     picture_download(
         get_nasa_epic_download_url(
             NASA_EPIC_DOWNLOAD_BASE_URL,
             NASA_EPIC_IMAGES_INFO,
             nasa_api_key, 'png'),
-        'pictures', 'nasa_epic'
+        download_path, 'nasa_epic', nasa_api_key
     )
 
 
