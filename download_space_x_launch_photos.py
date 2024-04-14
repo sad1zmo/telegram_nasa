@@ -4,7 +4,6 @@ from support_functions import picture_download
 from pathlib import Path
 
 
-
 SPACE_X_URL = 'https://api.spacexdata.com/v5/launches'
 SPACE_X_LAUNCH_ID = '5eb87d47ffd86e000604b38a'
 
@@ -17,7 +16,7 @@ def create_parser ():
     return parser
 
 
-def get_spacex_photos(url, launch_id):
+def get_spacex_photo_urls(url, launch_id):
     """
     Получает оригинальные URL-адреса фотографий SpaceX по идентификатору запуска.
 
@@ -50,11 +49,9 @@ def main():
     args = create_parser().parse_args()
     space_x_launch_id = args.id
     download_path = args.download_path
-    print(Path(download_path))
-    if not Path(download_path).exists():
-        Path(download_path).mkdir(parents=True, exist_ok=True)
+    Path(download_path).mkdir(parents=True, exist_ok=True)
     picture_download(
-        get_spacex_photos(SPACE_X_URL, space_x_launch_id),
+        get_spacex_photo_urls(SPACE_X_URL, space_x_launch_id),
         download_path, 'space-x'
     )
 

@@ -6,7 +6,7 @@ import time
 import argparse
 from environs import Env
 from pathlib import Path
-from telegram import NetworkError
+from telegram.error import NetworkError
 
 
 
@@ -21,31 +21,29 @@ def create_parser ():
     return parser
 
 
-def process_files(directory):
-    for current_dir, dirs, files in os.walk(directory):
-        for file in files:
-            file_path = os.path.join(current_dir, file)
+def collect_process_files(directory):
+    for file_path in Path(directory).rglob('*'):
+        if file_path.is_file():
             ALL_FILES.append(file_path)
-    for subdir in dirs:
-            subdir_path = os.path.join(current_dir, subdir)
-            process_files(subdir_path)
+
+
+async def send_document(bot, chat_id, file_path, time_for_upload=None):
+    async with bot:
+        with open(file_path, 'rb') as file:
+            await bot.send_document(chat_id=chat_id, document=file)
+    if time_for_upload:
+        time.sleep(time_for_upload)
 
 
 async def upload_photo_to_telegram(telegram_api_key, time_for_upload, chat_id, file):
      while True:
-        process_files(Path('./pictures'))
+        collect_process_files(Path('./pictures'))
         random.shuffle(ALL_FILES)
         bot = telegram.Bot(telegram_api_key)
         if file:
-            with open(file, 'rb') as file:
-                async with bot:
-                    await bot.send_document(chat_id=chat_id, document=file)
-                    break
+            await send_document(bot, chat_id, file)
         else:
-            with open(ALL_FILES[0], 'rb') as document:
-                async with bot:
-                    await bot.send_document(chat_id=chat_id, document=document)
-                    time.sleep(time_for_upload)
+            await send_document(bot, chat_id, ALL_FILES[0], time_for_upload)
 
 
 async def main():

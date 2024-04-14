@@ -1,7 +1,6 @@
 import requests
 from environs import Env
 from support_functions import picture_download
-import urllib.parse
 from datetime import datetime
 from pathlib import Path
 import argparse
@@ -18,7 +17,7 @@ def create_parser ():
     return parser
 
 
-def get_nasa_epic_download_url(base_url, info_url, api_key, extention):
+def get_nasa_epic_download_urls(base_url, info_url, api_key, extention):
     """
     Получает список URL-адресов для скачивания изображений из API NASA EPIC.
 
@@ -57,8 +56,6 @@ def get_nasa_epic_download_url(base_url, info_url, api_key, extention):
         (date, time) = picture_info['date'].split(' ')
         datetime_from_string = datetime.strptime(date, "%Y-%m-%d")
         date = datetime_from_string.strftime("%Y/%m/%d")
-
-        api_key = urllib.parse.urlencode(payload)
         link = f'{base_url}/{date}/{extention}/{image_name}.{extention}'
         epic_download_url_list.append(link)
     return epic_download_url_list
@@ -70,12 +67,10 @@ def main():
     nasa_api_key = env.str('NASA_API_KEY')
     args = create_parser().parse_args()
     download_path = args.download_path
-    print(Path(download_path))
-    if not Path(download_path).exists():
-        Path(download_path).mkdir(parents=True, exist_ok=True)
+    Path(download_path).mkdir(parents=True, exist_ok=True)
     
     picture_download(
-        get_nasa_epic_download_url(
+        get_nasa_epic_download_urls(
             NASA_EPIC_DOWNLOAD_BASE_URL,
             NASA_EPIC_IMAGES_INFO,
             nasa_api_key, 'png'),
