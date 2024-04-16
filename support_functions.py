@@ -29,7 +29,7 @@ def get_file_extension(url):
     return extension[1:]
 
 
-def picture_download(pictures_urls_list, path, filename, api_key='q='):
+def download_pictures(picture_urls, path, filename, api_key='q='):
     """
     Загружает изображения из списка URL-адресов и сохраняет их в указанную директорию.
 
@@ -55,12 +55,13 @@ def picture_download(pictures_urls_list, path, filename, api_key='q='):
         >>> picture_download(pictures_urls, 'downloads', 'image')
     """
     payload = {'api_key': api_key}
-    for index, url_picture in enumerate(pictures_urls_list):
-        if not get_file_extension(url_picture):
+    for index, picture_url in enumerate(picture_urls):
+        if not get_file_extension(picture_url):
             continue
-        response = requests.get(url_picture, params=payload)
+        response = requests.get(picture_url, params=payload)
         response.raise_for_status()
 
-        file_path = Path(path, f"{filename}_{index}.{get_file_extension(url_picture)}")
+        file_path = Path(path, f"{filename}_{index}.{get_file_extension(
+            picture_url)}")
         with open(file_path, 'wb') as file:
             file.write(response.content)

@@ -8,3 +8,4 @@ pyvenv.cfg
 **/.DS_Store
 **/share/*
 **/__pycache__/*
+**/.vscode

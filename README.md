@@ -69,8 +69,8 @@ python download_epic_nasa_photos.py -f my_photos
 
 ### Использование
 
-2. Зарегистрируйтесь на [сайте NASA](https://api.nasa.gov/) и получите свой API ключ.
-3. Запустите скрипт, указав путь для сохранения загруженных фотографий (по умолчанию `pictures`) и количество фотографий для загрузки (по умолчанию 5):
+1. Зарегистрируйтесь на [сайте NASA](https://api.nasa.gov/) и получите свой API ключ.
+2. Запустите скрипт, указав путь для сохранения загруженных фотографий (по умолчанию `pictures`) и количество фотографий для загрузки (по умолчанию 5):
 
 ## Аргументы командной строки
 
@@ -86,7 +86,7 @@ python download_counted_random_nasa_photos.py -f my_photos -n 10
 ## Upload picture to telegram
 
 ```python
-python pictures_uploads.py
+python upload_pictures.py
 ```
 
 По умолчанию скрипт будет загружать фотографии каждые 4 часа. Чтобы изменить это время, можно указать дополнительный аргумент `-s` или `--seconds` с указанием времени в секундах:
@@ -94,7 +94,13 @@ python pictures_uploads.py
 Так же можно передать путь и название файла что бы загрузить его `-f` или `--file`
 
 ```python
-python pictures_uploads.py -s 14400 -f 'pictures/space-x_0.jpg'
+python upload_pictures.py -s 14400 -f 'pictures/space-x_0.jpg'
+```
+
+Для указания пути к файлам можно указать через аргумент `-p` , если не указано будет использоваться `'pictures'`
+
+```python
+python upload_pictures.py -s 14400 -p 'pictures'
 ```
 
 ## Важно

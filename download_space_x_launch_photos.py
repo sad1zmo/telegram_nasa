@@ -1,6 +1,6 @@
 import requests
 import argparse
-from support_functions import picture_download
+from support_functions import download_pictures
 from pathlib import Path
 
 
@@ -8,11 +8,10 @@ SPACE_X_URL = 'https://api.spacexdata.com/v5/launches'
 SPACE_X_LAUNCH_ID = '5eb87d47ffd86e000604b38a'
 
 
-def create_parser ():
+def create_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument ('-i', '--id', nargs='?', default=SPACE_X_LAUNCH_ID)
-    parser.add_argument ('-f', '--download_path', nargs='?', default='pictures')
- 
+    parser.add_argument('-i', '--id', nargs='?', default=SPACE_X_LAUNCH_ID)
+    parser.add_argument('-f', '--download_path', nargs='?', default='pictures')
     return parser
 
 
@@ -27,7 +26,7 @@ def get_spacex_photo_urls(url, launch_id):
     Возвращает:
         str: Оригинальный URL-адрес фотографий SpaceX для указанного запуска.
 
-    Выполняет запрос к API SpaceX с использованием указанного базового URL-адреса `url` 
+    Выполняет запрос к API SpaceX с использованием указанного базового URL-адреса `url`
     и идентификатора запуска `id`, чтобы получить информацию о фотографиях этого запуска.
     Затем возвращает оригинальный URL-адрес фотографий из JSON-ответа.
 
@@ -50,7 +49,7 @@ def main():
     space_x_launch_id = args.id
     download_path = args.download_path
     Path(download_path).mkdir(parents=True, exist_ok=True)
-    picture_download(
+    download_pictures(
         get_spacex_photo_urls(SPACE_X_URL, space_x_launch_id),
         download_path, 'space-x'
     )
